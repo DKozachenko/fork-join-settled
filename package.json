@@ -1,16 +1,36 @@
 {
   "name": "fork-join-settled",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Plugin with prohibition of import / export from barrel files",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsup ./src"
+    "build": "tsup ./src; copyfiles package.json README.md LICENSE.md dist"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "rxjs",
+    "fork join",
+    "promise all",
+    "promise all settled",
+    "fork join settled"
+  ],
+  "author": {
+    "name": "Diana Kozachenko",
+    "email": "kozachenkodiana03@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DKozachenko/fork-join-settled"
+  },
+  "bugs": {
+    "url": "https://github.com/DKozachenko/fork-join-settled/issues",
+    "email": "kozachenkodiana03@gmail.com"
+  },
+  "homepage": "https://github.com/DKozachenko/fork-join-settled/blob/develop/README.md",
+  "license": "MIT",
   "devDependencies": {
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
+    "copyfiles": "^2.4.1",
+    "tsup": "8.3.6",
+    "typescript": "5.7.3"
   }
 }
