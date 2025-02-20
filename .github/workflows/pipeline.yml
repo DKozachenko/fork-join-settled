@@ -1,0 +1,73 @@
+name: Fork Join Settled
+
+# permissions:
+#   contents: write
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['develop']
+
+env:
+  DIST_PATH: ./dist
+  # RELEASE_FILE_NAME: bybit-filters.tar.gz
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Lint
+        run: npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Build
+        run: npm run build
+
+  # create-version:
+  #   needs: [build]
+  #   name: Create version
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     version: ${{ steps.create-version.outputs.VERSION }}
+  #   steps:
+  #     - name: Get repository code
+  #       uses: actions/checkout@v4
+  #     - name: Save package.json version
+  #       id: create-version
+  #       # Обрезаем версию по бокам на один символ, тк npm pkg get version возвращает строку
+  #       run: VERSION_STR=$(npm pkg get version) && echo "VERSION=${VERSION_STR:1:-1}" >> $GITHUB_OUTPUT
+
+  # create-release:
+  #   needs: [build, create-version]
+  #   runs-on: ubuntu-latest
+  #   name: Create Release
+  #   steps:
+  #     - name: Get repository code
+  #       uses: actions/checkout@v4
+  #     - name: Install dependencies
+  #       run: npm ci --ignore-scripts
+  #     - name: Build
+  #       run: npm run build
+  #     - name: Make archive
+  #       run: tar -czvf ${{ env.RELEASE_FILE_NAME }} -C ${{ env.DIST_PATH }} .
+  #     - name: Make Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         tag_name: ${{ needs.create-version.outputs.version }}
+  #         name: Release ${{ needs.create-version.outputs.version }}
+  #         body_path: ./README.md
+  #         files: ${{ env.RELEASE_FILE_NAME }}
+  #         draft: false
+  #         prerelease: false
