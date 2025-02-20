@@ -6,6 +6,7 @@ export default defineConfig({
   target: 'es2020',
   minify: true,
   outDir: 'dist/lib',
+  tsconfig: 'tsconfig.json',
   format: ['esm', 'cjs'],
   dts: true,
   sourcemap: true,
