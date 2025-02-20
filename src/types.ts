@@ -6,25 +6,25 @@ export enum PromiseAllStatus {
 }
 
 export interface PromiseAllItemBase {
-  status: PromiseAllStatus,
+  status: PromiseAllStatus;
 }
 
 export interface PromiseAllItemFulfilled<T = unknown> extends PromiseAllItemBase {
-  status: PromiseAllStatus.Fulfilled,
-  value: T,
+  status: PromiseAllStatus.Fulfilled;
+  value: T;
 }
 
 export interface PromiseAllItemRejected extends PromiseAllItemBase {
-  status: PromiseAllStatus.Rejected,
-  reason: Error
+  status: PromiseAllStatus.Rejected;
+  reason: Error;
 }
 
 export type PromiseAllItem<T> = PromiseAllItemFulfilled<T> | PromiseAllItemRejected;
 
 export type PromiseAllSources<TInput extends unknown[]> = {
-  [Key in keyof TInput]: Observable<TInput[Key]>
-}
+  [Key in keyof TInput]: Observable<TInput[Key]>;
+};
 
 export type PromiseAllOutput<TInput extends unknown[]> = {
-  [Key in keyof TInput]: PromiseAllItem<TInput[Key]>
-}
+  [Key in keyof TInput]: PromiseAllItem<TInput[Key]>;
+};
