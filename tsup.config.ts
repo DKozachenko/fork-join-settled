@@ -1,8 +1,10 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
   name: 'TSUP config',
-  entry: ['./src/index.ts'],
+  // Ignore spec files
+  // https://github.com/egoist/tsup/issues/986#issuecomment-1927797098
+  entry: ['src/**/*.ts', '!src/**/*.spec.ts'],
   target: 'es2020',
   minify: true,
   outDir: 'dist/lib',
@@ -12,4 +14,4 @@ export default defineConfig({
   sourcemap: true,
   splitting: false,
   clean: true,
-})
+});

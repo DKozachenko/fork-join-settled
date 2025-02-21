@@ -12,6 +12,7 @@ const prettierConfig = {
 
 const tsConfig = {
   files: ['**/*.ts'],
+  ignores: ["src/*.spec.ts"],
   extends: [
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
