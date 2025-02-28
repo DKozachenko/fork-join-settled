@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { cold } from 'jest-marbles';
+import { cold, hot } from 'jest-marbles';
 import { ColdObservable } from 'jest-marbles/dist/typings/src/rxjs/cold-observable';
 import { forkJoinSettled } from './fork-join-settled';
 import { PromiseAllItem, PromiseAllStatus } from './types';
@@ -30,10 +30,13 @@ function generateSingleEmittedObservables(inputValues: (any | Error)[], frames: 
 }
 
 describe('fork-join-settled', () => {
-  describe('cold observables', () => {
+  describe.each([
+    [cold],
+    [hot],
+  ])('%p observables', (observableType) => {
     test('if sources are empty it should complete immediately', () => {
       const actualObservable = forkJoinSettled([]);
-      const expectedObservable = cold('|');
+      const expectedObservable = observableType('|');
 
       expect(actualObservable).toBeObservable(expectedObservable);
     });
@@ -50,7 +53,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold('-(a|)', { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType('-(a|)', { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -62,7 +65,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues, frames);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${FRAME_LENGTH}-(a|)`, { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType(`${FRAME_LENGTH}-(a|)`, { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -74,7 +77,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues, frames);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${'-'.repeat(longestFrameLength)}-(a|)`, { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType(`${'-'.repeat(longestFrameLength)}-(a|)`, { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -89,7 +92,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold('(a|)', { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType('(a|)', { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -101,7 +104,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues, frames);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${FRAME_LENGTH}(a|)`, { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType(`${FRAME_LENGTH}(a|)`, { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -113,7 +116,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues, frames);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${'-'.repeat(longestFrameLength)}(a|)`, { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType(`${'-'.repeat(longestFrameLength)}(a|)`, { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -125,7 +128,7 @@ describe('fork-join-settled', () => {
           const sources = generateSingleEmittedObservables(inputValues);
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`-(a|)`, { a: generateOutputValue(inputValues) });
+          const expectedObservable = observableType(`-(a|)`, { a: generateOutputValue(inputValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -135,18 +138,18 @@ describe('fork-join-settled', () => {
     describe('multiple emitted values', () => {
       describe('completed successfully', () => {
         test('if sources are completed successfully it should complete with lastest fulfield items', () => {
-          const obs1 = cold(`-a-|`, { a: 5 });
-          const obs2 = cold(`-a-b|`, { a: 5, b: 'test' });
-          const obs3 = cold(`-a-b-c--|`, { a: 5, b: 'test', c: true });
-          const obs4 = cold(`a|`, { a: { prop: 'value' } });
-          const obs5 = cold(`a---b|`, { a: { prop: 'value' }, b: [1, 2, 3, 4] });
+          const obs1 = observableType(`-a-|`, { a: 5 });
+          const obs2 = observableType(`-a-b|`, { a: 5, b: 'test' });
+          const obs3 = observableType(`-a-b-c--|`, { a: 5, b: 'test', c: true });
+          const obs4 = observableType(`a|`, { a: { prop: 'value' } });
+          const obs5 = observableType(`a---b|`, { a: { prop: 'value' }, b: [1, 2, 3, 4] });
           const sources = [obs1, obs2, obs3, obs4, obs5];
 
           const longestMarbles = Math.max(...sources.map(obs => obs.marbles.replace('|', '').length));
           const latestValues = [5, 'test', true, { prop: 'value' }, [1, 2, 3, 4]];
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${'-'.repeat(longestMarbles)}(a|)`, { a: generateOutputValue(latestValues) });
+          const expectedObservable = observableType(`${'-'.repeat(longestMarbles)}(a|)`, { a: generateOutputValue(latestValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -155,18 +158,18 @@ describe('fork-join-settled', () => {
 
       describe('with errors', () => {
         test('if sources are completed with errors it should complete with lastest rejected items', () => {
-          const obs1 = cold(`-a-#`, { a: 5 }, new Error('error 1'));
-          const obs2 = cold(`-a-b-#`, { a: 5, b: 'test' }, new Error('error 2'));
-          const obs3 = cold(`-a-b-c--#`, { a: 5, b: 'test', c: true }, new Error('error 3'));
-          const obs4 = cold(`a#`, { a: { prop: 'value' } }, new Error('error 4'));
-          const obs5 = cold(`a---b#`, { a: { prop: 'value' }, b: [1, 2, 3, 4] }, new Error('error 5'));
+          const obs1 = observableType(`-a-#`, { a: 5 }, new Error('error 1'));
+          const obs2 = observableType(`-a-b-#`, { a: 5, b: 'test' }, new Error('error 2'));
+          const obs3 = observableType(`-a-b-c--#`, { a: 5, b: 'test', c: true }, new Error('error 3'));
+          const obs4 = observableType(`a#`, { a: { prop: 'value' } }, new Error('error 4'));
+          const obs5 = observableType(`a---b#`, { a: { prop: 'value' }, b: [1, 2, 3, 4] }, new Error('error 5'));
           const sources = [obs1, obs2, obs3, obs4, obs5];
 
           const longestMarbles = Math.max(...sources.map(obs => obs.marbles.replace('#', '').length));
           const latestValues = [new Error('error 1'), new Error('error 2'), new Error('error 3'), new Error('error 4'), new Error('error 5')];
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${'-'.repeat(longestMarbles)}(a|)`, { a: generateOutputValue(latestValues) });
+          const expectedObservable = observableType(`${'-'.repeat(longestMarbles)}(a|)`, { a: generateOutputValue(latestValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
@@ -174,19 +177,19 @@ describe('fork-join-settled', () => {
 
       describe('combined cases', () => {
         test('if sources are combined (completed successfully and with errors both) it should complete with lastest rejected items (fulfield and rejected respectively)', () => {
-          const obs1 = cold(`-a--|`, { a: 5 });
-          const obs2 = cold(`-a-b|`, { a: 5, b: 'test' });
-          const obs3 = cold(`-a-b--#`, { a: 5, b: 'test' }, new Error('error 1'));
-          const obs4 = cold(`a|`, { a: { prop: 'value' } });
-          const obs5 = cold(`a-b-c|`, { a: { prop: 'value' }, b: true, c: [1, 2, 3, 4] });
-          const obs6 = cold(`a-b-#`, { a: { prop: 'value' }, b: [1, 2, 3, 4] }, new Error('error 2'));
+          const obs1 = observableType(`-a--|`, { a: 5 });
+          const obs2 = observableType(`-a-b|`, { a: 5, b: 'test' });
+          const obs3 = observableType(`-a-b--#`, { a: 5, b: 'test' }, new Error('error 1'));
+          const obs4 = observableType(`a|`, { a: { prop: 'value' } });
+          const obs5 = observableType(`a-b-c|`, { a: { prop: 'value' }, b: true, c: [1, 2, 3, 4] });
+          const obs6 = observableType(`a-b-#`, { a: { prop: 'value' }, b: [1, 2, 3, 4] }, new Error('error 2'));
           const sources = [obs1, obs2, obs3, obs4, obs5, obs6];
 
           const longestMarbles = Math.max(...sources.map(obs => obs.marbles.replace('|', '').replace('#', '').length));
           const latestValues = [5, 'test', new Error('error 1'), { prop: 'value' }, [1, 2, 3, 4], new Error('error 2')];
 
           const actualObservable = forkJoinSettled(sources);
-          const expectedObservable = cold(`${'-'.repeat(longestMarbles)}(a|)`, { a: generateOutputValue(latestValues) });
+          const expectedObservable = observableType(`${'-'.repeat(longestMarbles)}(a|)`, { a: generateOutputValue(latestValues) });
 
           expect(actualObservable).toBeObservable(expectedObservable);
         });
