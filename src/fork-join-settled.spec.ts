@@ -2,21 +2,20 @@ import { describe, expect, test } from '@jest/globals';
 import { cold, hot } from 'jest-marbles';
 import { ColdObservable } from 'jest-marbles/dist/typings/src/rxjs/cold-observable';
 import { forkJoinSettled } from './fork-join-settled';
-import { PromiseAllItem, PromiseAllStatus } from './types';
 
-function generateOutputValue(inputValues: any[]): PromiseAllItem<any>[] {
+function generateOutputValue(inputValues: any[]): PromiseSettledResult<any>[] {
   return inputValues.map((item: any) => {
     if (item instanceof Error) {
       return {
-        status: PromiseAllStatus.Rejected,
+        status: 'rejected',
         reason: item
-      }
+      } as PromiseRejectedResult;
     }
 
     return {
-      status: PromiseAllStatus.Fulfilled,
+      status: 'fulfilled',
       value: item
-    }
+    } as PromiseSettledResult<typeof item>
   });
 }
 

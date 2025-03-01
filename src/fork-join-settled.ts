@@ -1,11 +1,12 @@
 import { filter, forkJoin, map, materialize, Observable } from 'rxjs';
-import {
-  PromiseAllSources,
-  PromiseAllOutput,
-  PromiseAllStatus,
-  PromiseAllItemFulfilled,
-  PromiseAllItemRejected,
-} from './types';
+
+export type PromiseAllSources<TInput extends unknown[]> = {
+  [Key in keyof TInput]: Observable<TInput[Key]>;
+};
+
+export type PromiseAllOutput<TInput extends unknown[]> = {
+  [Key in keyof TInput]: PromiseSettledResult<TInput[Key]>;
+};
 
 export function forkJoinSettled<TInput extends unknown[] = []>(
   sources: PromiseAllSources<TInput>,
@@ -18,15 +19,15 @@ export function forkJoinSettled<TInput extends unknown[] = []>(
         switch (notification.kind) {
           case 'N': {
             return {
-              status: PromiseAllStatus.Fulfilled,
+              status: 'fulfilled',
               value: notification.value,
-            } as PromiseAllItemFulfilled<typeof notification.value>;
+            } as PromiseFulfilledResult<typeof notification.value>;
           }
           case 'E': {
             return {
-              status: PromiseAllStatus.Rejected,
+              status: 'rejected',
               reason: notification.error,
-            } as PromiseAllItemRejected;
+            } as PromiseRejectedResult;
           }
         }
       }),
