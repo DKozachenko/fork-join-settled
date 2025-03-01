@@ -10,7 +10,7 @@ on:
 
 env:
   DIST_PATH: ./dist
-  # RELEASE_FILE_NAME: bybit-filters.tar.gz
+  RELEASE_FILE_NAME: fork-join-settled.tar.gz
 
 jobs:
   lint:
@@ -46,39 +46,39 @@ jobs:
       - name: Test
         run: npm run test
 
-  # create-version:
-  #   needs: [build]
-  #   name: Create version
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     version: ${{ steps.create-version.outputs.VERSION }}
-  #   steps:
-  #     - name: Get repository code
-  #       uses: actions/checkout@v4
-  #     - name: Save package.json version
-  #       id: create-version
-  #       # Обрезаем версию по бокам на один символ, тк npm pkg get version возвращает строку
-  #       run: VERSION_STR=$(npm pkg get version) && echo "VERSION=${VERSION_STR:1:-1}" >> $GITHUB_OUTPUT
+  create-version:
+    needs: [lint, build, test]
+    name: Create version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.create-version.outputs.VERSION }}
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Save package.json version
+        id: create-version
+        # Обрезаем версию по бокам на один символ, тк npm pkg get version возвращает строку
+        run: VERSION_STR=$(npm pkg get version) && echo "VERSION=${VERSION_STR:1:-1}" >> $GITHUB_OUTPUT
 
-  # create-release:
-  #   needs: [build, create-version]
-  #   runs-on: ubuntu-latest
-  #   name: Create Release
-  #   steps:
-  #     - name: Get repository code
-  #       uses: actions/checkout@v4
-  #     - name: Install dependencies
-  #       run: npm ci --ignore-scripts
-  #     - name: Build
-  #       run: npm run build
-  #     - name: Make archive
-  #       run: tar -czvf ${{ env.RELEASE_FILE_NAME }} -C ${{ env.DIST_PATH }} .
-  #     - name: Make Release
-  #       uses: softprops/action-gh-release@v2
-  #       with:
-  #         tag_name: ${{ needs.create-version.outputs.version }}
-  #         name: Release ${{ needs.create-version.outputs.version }}
-  #         body_path: ./README.md
-  #         files: ${{ env.RELEASE_FILE_NAME }}
-  #         draft: false
-  #         prerelease: false
+  create-release:
+    needs: [create-version]
+    runs-on: ubuntu-latest
+    name: Create Release
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Build
+        run: npm run build
+      - name: Make archive
+        run: tar -czvf ${{ env.RELEASE_FILE_NAME }} -C ${{ env.DIST_PATH }} .
+      - name: Make Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-version.outputs.version }}
+          name: Release ${{ needs.create-version.outputs.version }}
+          body_path: ./README.md
+          files: ${{ env.RELEASE_FILE_NAME }}
+          draft: false
+          prerelease: false

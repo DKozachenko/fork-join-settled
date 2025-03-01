@@ -49,7 +49,7 @@ describe('fork-join-settled', () => {
           [[5, 'test', true]],
           [[5, 'test', true, { prop: 'value' }]],
           [[5, 'test', true, { prop: 'value' }, [1, 2, 3, 4]]],
-        ])('if sources (%j) are completed successfully it should complete with fulfield items', (inputValues: any[]) => {
+        ])('if sources (%j) are completed successfully it should complete with fulfilled items', (inputValues: any[]) => {
           const sources = generateSingleEmittedObservables(inputValues);
 
           const actualObservable = forkJoinSettled(sources);
@@ -58,7 +58,7 @@ describe('fork-join-settled', () => {
           expect(actualObservable).toBeObservable(expectedObservable);
         });
 
-        test('if sources are completed without errors with same delay it should complete with fulfield items after this delay', () => {
+        test('if sources are completed without errors with same delay it should complete with fulfilled items after this delay', () => {
           const FRAME_LENGTH = '-';
           const inputValues = [5, 'test', true, { prop: 'value' }, [1, 2, 3, 4]];
           const frames = Array(inputValues.length).fill(FRAME_LENGTH);
@@ -70,7 +70,7 @@ describe('fork-join-settled', () => {
           expect(actualObservable).toBeObservable(expectedObservable);
         });
 
-        test('if sources are completed without errors with different delay it should complete with fulfield items after longest delay', () => {
+        test('if sources are completed without errors with different delay it should complete with fulfilled items after longest delay', () => {
           const inputValues = [5, 'test', true, { prop: 'value' }, [1, 2, 3, 4]];
           const frames = ['', '--', '-', '', '---'];
           const longestFrameLength = Math.max(...frames.map(frame => frame.length));
@@ -137,7 +137,7 @@ describe('fork-join-settled', () => {
 
     describe('multiple emitted values', () => {
       describe('completed successfully', () => {
-        test('if sources are completed successfully it should complete with lastest fulfield items', () => {
+        test('if sources are completed successfully it should complete with lastest fulfilled items', () => {
           const obs1 = observableType(`-a-|`, { a: 5 });
           const obs2 = observableType(`-a-b|`, { a: 5, b: 'test' });
           const obs3 = observableType(`-a-b-c--|`, { a: 5, b: 'test', c: true });
@@ -176,7 +176,7 @@ describe('fork-join-settled', () => {
       });
 
       describe('combined cases', () => {
-        test('if sources are combined (completed successfully and with errors both) it should complete with lastest rejected items (fulfield and rejected respectively)', () => {
+        test('if sources are combined (completed successfully and with errors both) it should complete with lastest rejected items (fulfilled and rejected respectively)', () => {
           const obs1 = observableType(`-a--|`, { a: 5 });
           const obs2 = observableType(`-a-b|`, { a: 5, b: 'test' });
           const obs3 = observableType(`-a-b--#`, { a: 5, b: 'test' }, new Error('error 1'));

@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsup; copyfiles package.json README.md LICENSE.md dist",
+    "build": "tsup; copyfiles package.json README.md LICENSE.md diagram.png dist",
     "lint": "eslint -c ./eslint.config.mjs src/",
     "test": "jest --config=jest.config.ts"
   },
