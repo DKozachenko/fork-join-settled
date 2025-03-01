@@ -22,7 +22,7 @@ Where `R` is an array of objects that describe the outcome of each observable (i
 
 ### Difference from [forkJoin](https://rxjs.dev/api/index/function/forkJoin)
 
-As I said before `forkJoin` operator will completed with error if any of given observables throws an error. `forkJoin Settled` will never completed with error. It maps an error to object with "rejected" status. Value from observable it maps to object with "fulfilled" status.
+As I said before `forkJoin` operator will complete with error if any of given observables throws an error. `forkJoin Settled` will never completed with error. It maps an error to object with "rejected" status. Value from observable it maps to object with "fulfilled" status.
 
 ### Usage
 

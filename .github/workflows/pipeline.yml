@@ -1,7 +1,7 @@
 name: Fork Join Settled
 
-# permissions:
-#   contents: write
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
